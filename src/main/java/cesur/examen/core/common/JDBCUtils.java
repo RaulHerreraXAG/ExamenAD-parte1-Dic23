@@ -2,16 +2,18 @@ package cesur.examen.core.common;
 
 import lombok.extern.java.Log;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * EXAMEN DE ACCESO A DATOS
  * Diciembre 2023
  *
- * Nombre del alumno:
- * Fecha:
+ * Nombre del alumno: Raúl Herrera Alba
+ * Fecha: 11-12-2023
  *
  * No se permite escribir en consola desde las clases DAO, Service y Utils usando System.out.
  * En su lugar, usa log.info(), log.warning() y log.severe() para mostrar información interna
@@ -29,12 +31,37 @@ public class JDBCUtils {
      */
     private static final Connection conn;
 
+    private static Logger logger;
+
     static{
+
+
+        String url;
+        String user;
+        String password;
+
+        Properties properties = new Properties();
 
         try{
 
-            conn = null;
+
             /* Make implementation here ...  */
+
+            // Cargar la configuración de la base de datos desde un archivo de propiedades.
+            InputStream inputStream = JDBCUtils.class.getClassLoader().getResourceAsStream("db.properties");
+            properties.load(inputStream);
+            // URL de la conexión a la base de datos.
+            url = "jdbc:mysql://" + properties.get("host") + ":" + properties.get("port") + "/" + properties.get("dbname");
+            user = (String) properties.get("user");
+            password = (String) properties.get("password");
+
+            try {
+                // Establecer la conexión a la base de datos.
+                conn = DriverManager.getConnection(url, user, password);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
 
             if(conn==null) log.info("JDBCUtils Not implemented yet!");
             else log.info("Succesfully connected!");
